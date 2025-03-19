@@ -1,0 +1,38 @@
+﻿@page
+@using RazorHotelDB25Kristian.Models
+@model RazorHotelDB25Kristian.Pages.Hotels.GetAllHotelsModel
+@{
+    ViewData["Title"] = "GetAllHotels";
+}
+
+<h4>List of hotels</h4>
+
+
+Number of hotels is: @Model.Hotels.Count
+
+
+<a asp-asp-page="CreateHotel">Create</a>
+<table>
+    <thead>
+        <tr>
+            <th>No</th>
+            <th>Navn</th>
+            <th>Adresse</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        <tr>
+            @if(Model.Hotels.Count() != 0)
+            {
+                foreach(Hotel ht in Model.Hotels)
+                {
+                    <tr>@ht.HotelNr</tr>
+                    <tr>@ht.Navn</tr>
+                    <tr>@ht.Adresse</tr>
+                    <td><a asp-asp-page="DeleteHotel">Delete</a></td>
+                }
+            }
+        </tr>
+    </tbody>
+</table>
