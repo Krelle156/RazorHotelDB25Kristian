@@ -32,7 +32,7 @@ namespace RazorHotelDB25Kristian.Services
                         insertCommand.Parameters.AddWithValue("@Navn", hotel.Navn);
                         insertCommand.Parameters.AddWithValue("@Adresse", hotel.Adresse);
 
-                        int noRows = insertCommand.ExecuteNonQuery(); //This must be done *after* the connection is opened i think
+                        int noRows = await insertCommand.ExecuteNonQueryAsync(); //This must be done *after* the connection is opened i think
 
                         return noRows > 0;
                     }
@@ -51,21 +51,22 @@ namespace RazorHotelDB25Kristian.Services
         public async Task<Hotel> DeleteHotelAsync(int hotelNr)
         {
             using (SqlConnection connection = new SqlConnection(connectionString))
+            {
                 try
                 {
-                    {
 
-                        Hotel toDelete = await GetHotelFromIdAsync(hotelNr);
 
-                        await connection.OpenAsync();
-                        SqlCommand deleteCommand = new SqlCommand(deleteString, connection);
+                    Hotel toDelete = await GetHotelFromIdAsync(hotelNr);
 
-                        deleteCommand.Parameters.AddWithValue("@ID", hotelNr);
+                    await connection.OpenAsync();
+                    SqlCommand deleteCommand = new SqlCommand(deleteString, connection);
 
-                        int noRows = await deleteCommand.ExecuteNonQueryAsync(); //This must be done *after* the connection is opened i think
+                    deleteCommand.Parameters.AddWithValue("@ID", hotelNr);
 
-                        return toDelete;
-                    }
+                    int noRows = await deleteCommand.ExecuteNonQueryAsync(); //This must be done *after* the connection is opened i think
+
+                    return toDelete;
+
                 }
                 catch (SqlException sqlx)
                 {
@@ -75,6 +76,8 @@ namespace RazorHotelDB25Kristian.Services
                 {
                     Console.WriteLine(e.Message);
                 }
+            }
+                
             return null;
         }
 

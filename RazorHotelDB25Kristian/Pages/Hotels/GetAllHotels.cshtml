@@ -5,14 +5,16 @@
     ViewData["Title"] = "GetAllHotels";
 }
 
+<h5>Number of hotels is: @Model.Hotels.Count</h5>
 <h4>List of hotels</h4>
 
 
-Number of hotels is: @Model.Hotels.Count
 
+<btn>
+    <a asp-page="CreateHotel">Add a new hotel</a>
+</btn>
 
-<a asp-asp-page="CreateHotel">Create</a>
-<table>
+<table class="table">
     <thead>
         <tr>
             <th>No</th>
@@ -22,17 +24,30 @@ Number of hotels is: @Model.Hotels.Count
     </thead>
 
     <tbody>
-        <tr>
-            @if(Model.Hotels.Count() != 0)
+        @if(Model.Hotels.Count() != 0)
+        {
+            foreach(Hotel ht in Model.Hotels)
             {
-                foreach(Hotel ht in Model.Hotels)
-                {
-                    <tr>@ht.HotelNr</tr>
-                    <tr>@ht.Navn</tr>
-                    <tr>@ht.Adresse</tr>
-                    <td><a asp-asp-page="DeleteHotel">Delete</a></td>
-                }
+                <tr>
+                <td>@ht.HotelNr</td>
+                <td>@ht.Navn</td>
+                <td>@ht.Adresse</td>
+                <td>
+                    @* <form asp-page-handler="Delete" asp-route-DeleteNo="@ht.HotelNr">
+                        <button type="submit">
+                            Delete the thing!
+                        </button>
+                    </form> *@
+                    <form asp-page-handler="Delete" asp-route-DeleteNo="@ht.HotelNr">
+                            <input type="image" src="~/Images/trash3.svg" onclick="return confirm('Are you sure you want to delete hotel nr: @ht.HotelNr, &quot;@ht.Navn&quot;');">
+                    </form>
+
+                </td>
+                <td>
+                    <a asp-page="/Rooms/ViewAllRooms" asp-page-handler="WHotel" asp-route-HotelNo="@ht.HotelNr">Rooms!</a>
+                </td>
+                </tr>
             }
-        </tr>
+        }
     </tbody>
 </table>

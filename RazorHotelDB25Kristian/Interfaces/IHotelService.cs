@@ -11,7 +11,7 @@ namespace RazorHotelDB25Kristian.Interfaces
         Task<List<Hotel>> GetAllHotelAsync();
 
         /// <summary>
-        /// Henter et specifik hotel fra database 
+        /// Henter et specifikt hotel fra database 
         /// </summary>
         /// <param name="hotelNr">Udpeger det hotel der ønskes fra databasen</param>
         /// <returns>Det fundne hotel eller null hvis hotellet ikke findes</returns>

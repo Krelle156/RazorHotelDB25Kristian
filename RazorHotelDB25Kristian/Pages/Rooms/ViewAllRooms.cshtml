@@ -1,0 +1,58 @@
+﻿@page
+@using RazorHotelDB25Kristian.Models;
+@model RazorHotelDB25Kristian.Pages.Rooms.ViewAllRoomsModel
+@{
+    ViewData["Title"] = "ViewRooms";
+}
+
+<h5>Number of rooms is: @Model.Rooms.Count</h5>
+
+@if(Model.Hotel == null)
+{
+    <h4>List of all rooms across all hotels (<a asp-page="/Hotels/GetAllHotels">Consider selecting a hotel to see only its rooms</a>):</h4>
+} else
+{
+    <h4>List of all rooms belonging to hotel no. @Model.Hotel.HotelNr: @Model.Hotel.Navn</h4>
+}
+
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>No</th>
+            <th>HotelNo</th>
+            <th>Type</th>
+            <th>Price</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @if (Model.Rooms.Count() != 0)
+        {
+            foreach (Room r in Model.Rooms)
+            {
+                <tr>
+                    <td>@r.RoomNo</td>
+                    <td>@r.HotelNo</td>
+                    <td>@r.Type</td>
+                    <td>@r.Price</td>
+                </tr>
+            }
+
+        }
+        <tr>
+            <td>
+                <btn>
+                    @if(Model.Hotel == null)
+                    {
+                        <a asp-page="/Hotels/GetAllHotels">Select a hotel to add rooms</a>
+
+                    } else
+                    {
+                        <a asp-page="/Rooms/AddRoom">Add a new room</a>
+                    }
+                </btn>
+            </td>
+        </tr>
+    </tbody>
+</table>
