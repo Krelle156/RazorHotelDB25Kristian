@@ -1,4 +1,25 @@
 ﻿@page
 @model RazorHotelDB25Kristian.Pages.Rooms.AddRoomModel
 @{
+    ViewData["Title"] = "AddRoom";
 }
+
+<form method="post" asp-route-HotelNo="@Model.HotelNo">
+
+    <div class="form-group">
+        <label asp-for="@Model.RoomNo" class="control-label"></label>
+        <input asp-for="@Model.RoomNo" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="@Model.Type" class="control-label"></label>
+        <input asp-for="@Model.Type" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="@Model.Price" class="control-label"></label>
+        <input asp-for="@Model.Price" class="form-control" />
+    </div>
+
+    <input type="submit" value="Gem" class="btn btn-primary" />
+</form>

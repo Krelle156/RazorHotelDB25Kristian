@@ -16,7 +16,7 @@ namespace RazorHotelDB25Kristian.Services
         private string queryByHotelString = "SELECT Room_no, Hotel_No, Types, Price FROM Room Where Hotel_No = @hotelNo";
         private string queryByNameString = "SELECT Hotel_No, Name, Address FROM Hotel Where Hotel_Name = @Name";
 
-        private string insertString = "Insert INTO Room Values(@No, @Hotel_no, @Type, @Price)";
+        private string insertString = "Insert INTO Room Values(@Room_No, @Hotel_no, @Types, @Price)";
         private string deleteString = "Delete From Hotel Where Hotel_No = @ID";
 
         public async Task<List<Room>> GetAllRoomAsync()
@@ -97,16 +97,16 @@ namespace RazorHotelDB25Kristian.Services
 
         public async Task<bool> AddRoom(Room room)
         {
-            using (SqlConnection connection = new SqlConnection())
+            using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 try
                 {
                     await connection.OpenAsync();
 
                     SqlCommand insertCommand = new SqlCommand(insertString, connection);
-                    insertCommand.Parameters.AddWithValue("@No",room.RoomNo);
+                    insertCommand.Parameters.AddWithValue("@Room_No",room.RoomNo);
                     insertCommand.Parameters.AddWithValue("@Hotel_No", room.HotelNo);
-                    insertCommand.Parameters.AddWithValue("@Type", room.Type);
+                    insertCommand.Parameters.AddWithValue("@Types", room.Type);
                     insertCommand.Parameters.AddWithValue("@Price", room.Price);
 
                     int noRows = await insertCommand.ExecuteNonQueryAsync();

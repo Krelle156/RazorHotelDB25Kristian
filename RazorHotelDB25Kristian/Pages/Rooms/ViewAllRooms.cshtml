@@ -49,7 +49,7 @@
 
                     } else
                     {
-                        <a asp-page="/Rooms/AddRoom">Add a new room</a>
+                        <a asp-page="/Rooms/AddRoom" asp-route-TheHotelNo="@Model.Hotel.HotelNr" class="btn btn-primary">Add a new room</a>
                     }
                 </btn>
             </td>
