@@ -14,10 +14,10 @@ namespace RazorHotelDB25Kristian.Services
         private string queryString = "SELECT Room_no, Hotel_No, Types, Price FROM Room";
 
         private string queryByHotelString = "SELECT Room_no, Hotel_No, Types, Price FROM Room Where Hotel_No = @hotelNo";
-        private string queryByNameString = "SELECT Hotel_No, Name, Address FROM Hotel Where Hotel_Name = @Name";
+        private string querySpecificString = "SELECT Room_no, Hotel_No, Types, Price FROM Room Where Room_No =@roomNo AND Hotel_No = @hotelNo";
 
-        private string insertString = "Insert INTO Room Values(@Room_No, @Hotel_no, @Types, @Price)";
-        private string deleteString = "Delete From Hotel Where Hotel_No = @ID";
+        private string insertString = "Insert INTO Room Values(@roomNo, @hotelNo, @type, @price)";
+        private string deleteString = "Delete From Room Where Room_No = @roomNo AND Hotel_No = @hotelNo";
 
         public async Task<List<Room>> GetAllRoomAsync()
         {
@@ -95,6 +95,47 @@ namespace RazorHotelDB25Kristian.Services
             return result;
         }
 
+        public async Task<Room> GetOneRoomInHotelAsync(int roomNo, int hotelNo)
+        {
+            Room result;
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                try
+                {
+                    SqlCommand command = new SqlCommand(querySpecificString, connection);
+                    command.Parameters.AddWithValue("@roomNo", roomNo);
+                    command.Parameters.AddWithValue("@hotelNo", hotelNo);
+                    await command.Connection.OpenAsync();
+
+                    SqlDataReader reader = await command.ExecuteReaderAsync();
+                    while (await reader.ReadAsync())
+                    {
+                        int saveRoomNo = reader.GetInt32("Room_No");
+                        int savehotelNo = reader.GetInt32("Hotel_No");
+                        string saveType = reader.GetString("Types");
+                        double savePrice = reader.GetDouble("Price");
+
+                        result = new Room(saveRoomNo, savehotelNo, saveType, savePrice);
+                        return result;
+                    }
+                    reader.Close();
+                }
+                catch (SqlException sqlExp)
+                {
+                    Console.WriteLine("Database error" + sqlExp.Message);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Generel fejl: " + ex.Message);
+                }
+                finally
+                {
+
+                }
+            }
+            return null;
+        }
+
         public async Task<bool> AddRoom(Room room)
         {
             using (SqlConnection connection = new SqlConnection(connectionString))
@@ -104,10 +145,10 @@ namespace RazorHotelDB25Kristian.Services
                     await connection.OpenAsync();
 
                     SqlCommand insertCommand = new SqlCommand(insertString, connection);
-                    insertCommand.Parameters.AddWithValue("@Room_No",room.RoomNo);
-                    insertCommand.Parameters.AddWithValue("@Hotel_No", room.HotelNo);
-                    insertCommand.Parameters.AddWithValue("@Types", room.Type);
-                    insertCommand.Parameters.AddWithValue("@Price", room.Price);
+                    insertCommand.Parameters.AddWithValue("@roomNo",room.RoomNo);
+                    insertCommand.Parameters.AddWithValue("@hotelNo", room.HotelNo);
+                    insertCommand.Parameters.AddWithValue("@types", room.Type);
+                    insertCommand.Parameters.AddWithValue("@price", room.Price);
 
                     int noRows = await insertCommand.ExecuteNonQueryAsync();
 
@@ -126,9 +167,38 @@ namespace RazorHotelDB25Kristian.Services
             return false;
         }
 
-        public async Task<Hotel> DeleteRoomAsync(int roomNo, int hotelNo)
+        public async Task<Room> DeleteRoomAsync(int roomNo, int hotelNo)
         {
-            throw new NotImplementedException();
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                try
+                {
+
+
+                    Room toDelete = await GetOneRoomInHotelAsync(roomNo, hotelNo);
+
+                    await connection.OpenAsync();
+                    SqlCommand deleteCommand = new SqlCommand(deleteString, connection);
+
+                    deleteCommand.Parameters.AddWithValue("@roomNo", roomNo);
+                    deleteCommand.Parameters.AddWithValue("@hotelNo", hotelNo);
+
+                    int noRows = await deleteCommand.ExecuteNonQueryAsync(); //This must be done *after* the connection is opened i think
+
+                    return toDelete;
+
+                }
+                catch (SqlException sqlx)
+                {
+                    Console.WriteLine(sqlx.Message);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                }
+                return null;
+            }
+
         }
 
 

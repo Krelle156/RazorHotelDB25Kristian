@@ -36,6 +36,11 @@
                     <td>@r.HotelNo</td>
                     <td>@r.Type</td>
                     <td>@r.Price</td>
+                    <td>
+                        <form asp-page-handler="Delete" asp-route-RoomNo="@r.RoomNo" asp-route-HotelNo="@r.HotelNo">
+                            <input type="image" src="~/Images/trash3.svg" onclick="return confirm('Are you sure you want to delete room @r.RoomNo, from this hotel?');">
+                        </form>
+                    </td>
                 </tr>
             }
 

@@ -1,5 +1,6 @@
 ﻿@page
 @using RazorHotelDB25Kristian.Models
+@using RazorHotelDB25Kristian.Helpers
 @model RazorHotelDB25Kristian.Pages.Hotels.GetAllHotelsModel
 @{
     ViewData["Title"] = "GetAllHotels";
@@ -20,6 +21,7 @@
             <th>No</th>
             <th>Navn</th>
             <th>Adresse</th>
+            <th>Hash?</th>
         </tr>
     </thead>
 
@@ -32,6 +34,7 @@
                 <td>@ht.HotelNr</td>
                 <td>@ht.Navn</td>
                 <td>@ht.Adresse</td>
+                <td>@await SimpleHash.CreateHashStringAsync(ht.Navn)</td>
                 <td>
                     @* <form asp-page-handler="Delete" asp-route-DeleteNo="@ht.HotelNr">
                         <button type="submit">

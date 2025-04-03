@@ -31,5 +31,11 @@ namespace RazorHotelDB25Kristian.Pages.Rooms
             Hotel = await _hotelService.GetHotelFromIdAsync(HotelNo);
             Rooms = await _internalService.GetAllRoomInHotelAsync(HotelNo);
         }
+
+        public async Task<IActionResult> OnPostDelete(int RoomNo, int HotelNo)
+        {
+            await _internalService.DeleteRoomAsync(RoomNo, HotelNo);
+            return RedirectToPage("ViewAllRooms", new  { handler = "WHotel" , HotelNo });
+        }
     }
 }

@@ -18,6 +18,13 @@ namespace RazorHotelDB25Kristian.Interfaces
         Task<List<Room>> GetAllRoomInHotelAsync(int hotelNr);
 
         /// <summary>
+        /// Henter alle værelser fra et specifikt hotel fra database 
+        /// </summary>
+        /// <param name="hotelNr">Udpeger det hotel værelserne skal tilhøre</param>
+        /// <returns>Liste af fundne værelser eller null hvis hotellet ikke findes</returns>
+        Task<Room> GetOneRoomInHotelAsync(int roomNo, int hotelNo);
+
+        /// <summary>
         /// Indsætter et nyt værelse i databasen
         /// </summary>
         /// <param name="room">værelset der skal indsættes</param>
@@ -39,6 +46,6 @@ namespace RazorHotelDB25Kristian.Interfaces
         /// <param name="roomNo">Nummer på det værelse der skal slettes</param>
         /// <param name="hotelNo">Nummer på det hotel værelsest skal slettes fra</param>
         /// <returns>Det værelse der er slettet fra databasen, returnere null hvis værelset ikke findes</returns>
-        Task<Hotel> DeleteRoomAsync(int roomNo, int hotelNo);
+        Task<Room> DeleteRoomAsync(int roomNo, int hotelNo);
     }
 }
