@@ -1,0 +1,23 @@
+﻿@page
+@model RazorHotelDB25Kristian.Pages.Users.LoginModel
+@{
+    ViewData["Title"] = "Login";
+}
+
+<h4 class="text-danger">@Model.Message</h4>
+
+<form method="post">
+    <div class="form-group">
+        <label asp-for="@Model.Username" class="control-label"></label>
+        <input asp-for="@Model.Username" class="form-control" />
+    </div>
+
+
+    <div class="form-group">
+        <label asp-for="@Model.Password" class="control-label"></label>
+        <input asp-for="@Model.Password" class="form-control" />
+    </div>
+
+
+    <input type="submit" value="Login" class="btn btn-primary" />
+</form>

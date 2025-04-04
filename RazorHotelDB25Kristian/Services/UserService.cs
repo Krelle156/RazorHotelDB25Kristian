@@ -2,6 +2,7 @@
 using RazorHotelDB25Kristian.Helpers;
 using RazorHotelDB25Kristian.Interfaces;
 using RazorHotelDB25Kristian.Models;
+using System.Data;
 
 namespace RazorHotelDB25Kristian.Services
 {
@@ -11,7 +12,7 @@ namespace RazorHotelDB25Kristian.Services
 
         private string insertString = "Insert INTO Hotel25Users Values(@userName, @hash)";
 
-        private string loginstring = "SELECT Hotel_No, Name, Address FROM Hotel Where Hotel_No = @ID";
+        private string loginString = "SELECT UserName, HashPass FROM Hotel25Users Where UserName = @userName AND HashPass = @hashPass";
 
         public async Task<bool> RegisterAsync(string newUserName, string newCode)
         {
@@ -42,12 +43,47 @@ namespace RazorHotelDB25Kristian.Services
             return false;
         }
 
-        public Task<bool> LoginAsync(string userName, string code)
+        public async Task<User> LoginAsync(string userName, string code)
         {
-            throw new NotImplementedException();
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                try
+                {
+                    User result = null;
+                    SqlCommand loginCommand = new SqlCommand(loginString, connection);
+
+                    loginCommand.Parameters.AddWithValue("@userName", userName);
+                    loginCommand.Parameters.AddWithValue("@hashPass", await SimpleHash.CreateHashStringAsync(code));
+
+                    await connection.OpenAsync();
+
+                    SqlDataReader reader = await loginCommand.ExecuteReaderAsync();
+                    
+                    while(reader.Read())
+                    {
+                        string name = reader.GetString("UserName");
+                        string hash = reader.GetString("HashPass");
+                        result = new User(name, hash);
+                    }
+
+                    reader.Close();
+
+
+                    return result;
+                }
+                catch (SqlException sqlx)
+                {
+                    throw sqlx;
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                }
+            }
+            return null;
         }
 
-        public Task<List<User>> GetAllUsers()
+        public async Task<List<User>> GetAllUsers()
         {
             throw new NotImplementedException();
         }

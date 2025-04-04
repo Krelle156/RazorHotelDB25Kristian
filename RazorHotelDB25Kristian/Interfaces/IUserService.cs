@@ -7,7 +7,7 @@ namespace RazorHotelDB25Kristian.Interfaces
 
         Task<bool> RegisterAsync(string newUserName, string newCode);
 
-        Task<bool> LoginAsync(string UserName, string Code);
+        Task<User> LoginAsync(string UserName, string Code);
 
         Task<List<User>> GetAllUsers();
     }
