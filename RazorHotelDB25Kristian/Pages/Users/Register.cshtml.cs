@@ -16,18 +16,26 @@ namespace RazorHotelDB25Kristian.Pages.Users
         [BindProperty]
         public string Password { get; set; }
 
+        public string Message { get; set; }
+
         public RegisterModel(IUserService userService)
         {
             _internalService = userService;
         }
 
-        public void OnGet()
+        public void OnGet(string Username, string Password)
         {
 
         }
 
         public async Task<IActionResult> OnPostAsync()
         {
+            if(await _internalService.UserExistsAsync(Username))
+            {
+                Message = "The username is already taken";
+                return Page();
+            }
+
             await _internalService.RegisterAsync(Username, Password);
             return RedirectToPage("/Index");
         }

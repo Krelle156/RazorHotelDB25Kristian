@@ -13,6 +13,7 @@ namespace RazorHotelDB25Kristian.Services
         private string insertString = "Insert INTO Hotel25Users Values(@userName, @hash)";
 
         private string loginString = "SELECT UserName, HashPass FROM Hotel25Users Where UserName = @userName AND HashPass = @hashPass";
+        private string findString = "SELECT UserName FROM Hotel25Users Where UserName = @userName";
 
         public async Task<bool> RegisterAsync(string newUserName, string newCode)
         {
@@ -81,6 +82,42 @@ namespace RazorHotelDB25Kristian.Services
                 }
             }
             return null;
+        }
+
+        public async Task<bool> UserExistsAsync(string userName)
+        {
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                try
+                {
+
+                    SqlCommand searchCommand = new SqlCommand(findString, connection);
+
+                    searchCommand.Parameters.AddWithValue("@userName", userName);
+                    await connection.OpenAsync();
+
+                    SqlDataReader reader = await searchCommand.ExecuteReaderAsync();
+
+                    while (reader.Read())
+                    {
+                        if (reader.GetString("UserName") != null) return true;
+                    }
+
+                    reader.Close();
+
+
+                    return true;
+                }
+                catch (SqlException sqlx)
+                {
+                    throw sqlx;
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                }
+            }
+            return false;
         }
 
         public async Task<List<User>> GetAllUsers()
