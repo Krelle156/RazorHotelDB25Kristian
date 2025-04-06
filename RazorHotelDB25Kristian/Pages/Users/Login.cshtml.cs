@@ -32,6 +32,7 @@ namespace RazorHotelDB25Kristian.Pages.Users
             if (await _internalService.LoginAsync(Username, Password) != null)
             {
                 Message = "Login Succesful";
+                HttpContext.Session.SetString("Username", Username);
                 return Page();
             }
             Message = "Login Failed";

@@ -104,9 +104,6 @@ namespace RazorHotelDB25Kristian.Services
                     }
 
                     reader.Close();
-
-
-                    return true;
                 }
                 catch (SqlException sqlx)
                 {
