@@ -18,6 +18,8 @@ namespace RazorHotelDB25Kristian.Pages.Hotels
         [BindProperty]
         public string HotelAddress { get; set; }
 
+        public string? SessionUsername { get; private set; }
+
 
         public CreateHotelModel(IHotelService hotelService)
         {
@@ -25,9 +27,11 @@ namespace RazorHotelDB25Kristian.Pages.Hotels
         }
 
 
-        public async Task OnGetAsync()
+        public async Task<IActionResult> OnGetAsync()
         {
-
+            SessionUsername = HttpContext.Session.GetString("Username");
+            if (String.IsNullOrEmpty(SessionUsername)) return RedirectToPage("/Users/Login");
+            return Page();
         }
 
         public async Task<IActionResult> OnPostAsync()

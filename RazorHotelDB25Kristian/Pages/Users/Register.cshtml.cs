@@ -14,6 +14,8 @@ namespace RazorHotelDB25Kristian.Pages.Users
         [BindProperty]
         public string Username { get; set; }
 
+        public string? SessionUsername { get; private set; }
+
         [BindProperty]
         public string Password { get; set; }
 
@@ -31,7 +33,8 @@ namespace RazorHotelDB25Kristian.Pages.Users
 
         public async Task<IActionResult> OnPostAsync()
         {
-            if(!HttpContext.Session.GetString("Username").IsNullOrEmpty())
+            SessionUsername = HttpContext.Session.GetString("Username");
+            if (!SessionUsername.IsNullOrEmpty())
             {
                 Message = "You are already logged in :)";
                 return Page(); //Just a hopefully temporary check

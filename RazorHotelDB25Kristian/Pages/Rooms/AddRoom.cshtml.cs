@@ -22,13 +22,22 @@ namespace RazorHotelDB25Kristian.Pages.Rooms
 
         public string Warning { get; set; }
 
+        public string? SessionUsername { get; private set; }
+
         public AddRoomModel(IRoomService roomService)
         {
             _internalService = roomService;
         }
-        public void OnGet(int TheHotelNo)
+        public IActionResult OnGet(int TheHotelNo)
         {
+            //Logincheck
+            SessionUsername = HttpContext.Session.GetString("Username");
+            if (String.IsNullOrEmpty(SessionUsername)) return RedirectToPage("/Users/Login");
+            //Logincheck
+
             HotelNo = TheHotelNo;
+
+            return Page();
         }
 
         public async Task<IActionResult> OnPostAsync(int HotelNo)
