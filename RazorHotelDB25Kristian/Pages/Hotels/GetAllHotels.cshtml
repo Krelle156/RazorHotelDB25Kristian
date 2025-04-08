@@ -46,6 +46,13 @@
                     </form>
 
                 </td>
+
+                <td>
+                    <a class="svg-link" asp-page="CreateHotel" asp-page-handler="Update" asp-route-OldHotelNo="@ht.HotelNr">
+                            <img src="~/Images/pencil-square.svg">
+                    </a>
+                </td>
+
                 <td>
                         <a asp-page="/Rooms/ViewAllRooms" asp-page-handler="WHotel" asp-route-HotelNo="@ht.HotelNr" class="btn btn-primary">Rooms!</a>
                 </td>

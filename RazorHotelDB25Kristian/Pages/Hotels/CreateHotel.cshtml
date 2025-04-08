@@ -5,12 +5,23 @@
 }
 
 
-<form method="post">
-    <div class="form-group">
-        <label asp-for="@Model.HotelNo" class="control-label"></label>
-        <input asp-for="@Model.HotelNo" class="form-control" />
-    </div>
+@if(Model.OldHotelNo == null)
+{
+    <h4>Creating a new hotel</h4>
+} else
+{
+    <h4>Modifying hotel @Model.HotelNo: @Model.HotelName</h4>
+}
 
+<form method="post">
+
+    @if(Model.OldHotelNo == null) 
+    {
+        <div class="form-group">
+            <label asp-for="@Model.HotelNo" class="control-label"></label>
+            <input asp-for="@Model.HotelNo" class="form-control" />
+        </div>
+    }
 
     <div class="form-group">
         <label asp-for="@Model.HotelName" class="control-label"></label>

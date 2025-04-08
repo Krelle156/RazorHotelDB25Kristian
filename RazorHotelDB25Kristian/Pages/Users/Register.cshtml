@@ -6,7 +6,7 @@
 
 <h4 class="text-danger">@Model.Message</h4>
 
-<form method="post">
+<form method="post" enctype="multipart/form-data">
     <div class="form-group">
         <label asp-for="@Model.Username" class="control-label"></label>
         <input asp-for="@Model.Username" class="form-control" />

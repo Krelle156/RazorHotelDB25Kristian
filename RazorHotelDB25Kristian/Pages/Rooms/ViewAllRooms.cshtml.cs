@@ -23,6 +23,7 @@ namespace RazorHotelDB25Kristian.Pages.Rooms
 
         public async Task OnGet()
         {
+
             Rooms = await _internalService.GetAllRoomAsync();
         }
 

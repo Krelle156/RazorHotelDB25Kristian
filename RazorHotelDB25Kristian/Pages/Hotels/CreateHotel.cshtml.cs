@@ -13,6 +13,9 @@ namespace RazorHotelDB25Kristian.Pages.Hotels
         public int HotelNo { get; set; }
 
         [BindProperty]
+        public int? OldHotelNo { get; set; }
+
+        [BindProperty]
         public string HotelName { get; set; }
 
         [BindProperty]
@@ -34,10 +37,31 @@ namespace RazorHotelDB25Kristian.Pages.Hotels
             return Page();
         }
 
+        public async Task<IActionResult> OnGetUpdateAsync(int OldHotelNo)
+        {
+            this.OldHotelNo = OldHotelNo;
+            Hotel temp = await _internalService.GetHotelFromIdAsync(OldHotelNo);
+            HotelNo = OldHotelNo;
+            HotelName = temp.Navn;
+            HotelAddress = temp.Adresse;
+            
+
+
+            SessionUsername = HttpContext.Session.GetString("Username");
+            if (String.IsNullOrEmpty(SessionUsername)) return RedirectToPage("/Users/Login");
+            return Page();
+        }
+
         public async Task<IActionResult> OnPostAsync()
         {
-            await _internalService.CreateHotelAsync(new Hotel(HotelNo, HotelName, HotelAddress));
-            return RedirectToPage("GetAllHotels") ;
+            if(OldHotelNo == null)
+            {
+                await _internalService.CreateHotelAsync(new Hotel(HotelNo, HotelName, HotelAddress));
+            } else
+            {
+                await _internalService.UpdateHotelAsync(new Hotel(0, HotelName, HotelAddress), (int)OldHotelNo);
+            }
+            return RedirectToPage("GetAllHotels");
         }
     }
 }

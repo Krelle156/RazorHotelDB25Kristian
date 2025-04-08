@@ -10,16 +10,19 @@ namespace RazorHotelDB25Kristian.Pages.Users
     public class RegisterModel : PageModel
     {
         private IUserService _internalService;
+        private IWebHostEnvironment _webHostEnvironment;
 
         [BindProperty]
         public string Username { get; set; }
 
-        public string? SessionUsername { get; private set; }
+        [BindProperty]
+        public IFormFile Image {get; set;}
 
         [BindProperty]
         public string Password { get; set; }
 
         public string Message { get; set; }
+        public string? SessionUsername { get; private set; }
 
         public RegisterModel(IUserService userService)
         {

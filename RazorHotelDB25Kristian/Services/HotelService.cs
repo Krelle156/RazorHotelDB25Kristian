@@ -16,6 +16,7 @@ namespace RazorHotelDB25Kristian.Services
         private string queryByNameString = "SELECT Hotel_No, Name, Address FROM Hotel Where Hotel_Name = @Name";
 
         private string deleteString = "Delete From Hotel Where Hotel_No = @ID";
+        private string updateString = "Update Hotel Set Name = @name, Address = @address Where Hotel_No = @ID";
 
         public async Task<bool> CreateHotelAsync(Hotel hotel)
         {
@@ -39,11 +40,11 @@ namespace RazorHotelDB25Kristian.Services
                 }
                 catch (SqlException sqlx)
                 {
-                    Console.WriteLine(sqlx.Message);
+                    BaseSqlExceptionReaction(sqlx);
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e.Message);
+                    BaseExceptionReaction(e);
                 }
             return false;
         }
@@ -70,11 +71,11 @@ namespace RazorHotelDB25Kristian.Services
                 }
                 catch (SqlException sqlx)
                 {
-                    Console.WriteLine(sqlx.Message);
+                    BaseSqlExceptionReaction(sqlx);
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e.Message);
+                    BaseExceptionReaction(e);
                 }
             }
                 
@@ -102,13 +103,13 @@ namespace RazorHotelDB25Kristian.Services
                     }
                     reader.Close();
                 }
-                catch (SqlException sqlExp)
+                catch (SqlException sqlx)
                 {
-                    Console.WriteLine("Database error" + sqlExp.Message);
+                    BaseSqlExceptionReaction(sqlx);
                 }
-                catch (Exception ex)
+                catch (Exception e)
                 {
-                    Console.WriteLine("Generel fejl: " + ex.Message);
+                    BaseExceptionReaction(e);
                 }
                 finally
                 {
@@ -146,23 +147,93 @@ namespace RazorHotelDB25Kristian.Services
                 }
                 catch (SqlException sqlx)
                 {
-                    Console.WriteLine(sqlx.Message);
+                    BaseSqlExceptionReaction(sqlx);
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e.Message);
+                    BaseExceptionReaction(e);
                 }
             return null;
         }
 
         public async Task<List<Hotel>> GetHotelsByNameAsync(string name)
         {
-            throw new NotImplementedException();
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                try
+                {
+                    List<Hotel> result = new List<Hotel>();
+
+                    int id = 0;
+                    string navn = "N/A";
+                    string adresse = "N/A";
+                    await connection.OpenAsync();
+
+                    SqlCommand findCommand = new SqlCommand(queryByNameString, connection);
+                    findCommand.Parameters.AddWithValue("@ID", name);
+                    SqlDataReader reader = await findCommand.ExecuteReaderAsync();
+
+                    while (await reader.ReadAsync())
+                    {
+                        id = reader.GetInt32("Hotel_No");
+                        navn = reader.GetString("Name");
+                        adresse = reader.GetString("Address");
+                        result.Add(new Hotel(id, navn, adresse));
+                    }
+
+                    return result;
+                }
+                catch (SqlException sqlx)
+                {
+                    BaseSqlExceptionReaction(sqlx);
+                }
+                catch (Exception e)
+                {
+                    BaseExceptionReaction(e);
+                }
+            }
+            return null;
         }
 
         public async Task<bool> UpdateHotelAsync(Hotel hotel, int hotelNr)
         {
-            throw new NotImplementedException();
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                try
+                {
+                    SqlCommand updateCommand = new SqlCommand(updateString, connection);
+                    await updateCommand.Connection.OpenAsync();
+
+                    updateCommand.Parameters.AddWithValue("ID", hotelNr);
+                    updateCommand.Parameters.AddWithValue("name", hotel.Navn);
+                    updateCommand.Parameters.AddWithValue("address", hotel.Adresse);
+
+
+                    int noRows = await updateCommand.ExecuteNonQueryAsync();
+                    return noRows > 0;
+                }
+                catch (SqlException sqlx)
+                {
+                    BaseSqlExceptionReaction(sqlx);
+                }
+                catch (Exception e)
+                {
+                    BaseExceptionReaction(e);
+                }
+            }
+            return false;
         }
+        private void BaseSqlExceptionReaction(SqlException sqlx)
+        {
+            throw sqlx;
+        }
+
+        private void BaseExceptionReaction(Exception ex)
+        {
+            //Do nothing?
+            //Explode?
+        }
+
     }
+
 }
