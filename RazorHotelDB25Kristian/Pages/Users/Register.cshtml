@@ -18,6 +18,13 @@
         <input asp-for="@Model.Password" class="form-control" />
     </div>
 
+    <div class="form-group">
+            <label asp-for="@Model.Image" class="control-label">Add image</label>
+            <div class="custom-file">
+                <input asp-for="@Model.Image" class="custom-file-input form-control" />
+            </div>
+        </div>
+
 
     <input type="submit" value="Gem" class="btn btn-primary" />
 </form>

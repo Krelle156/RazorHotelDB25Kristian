@@ -5,7 +5,7 @@ namespace RazorHotelDB25Kristian.Interfaces
     public interface IUserService
     {
 
-        Task<bool> RegisterAsync(string newUserName, string newCode);
+        Task<bool> RegisterAsync(string newUserName, string newCode, string? portraitPath);
 
         Task<User> LoginAsync(string userName, string Code);
 

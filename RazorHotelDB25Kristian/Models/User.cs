@@ -2,15 +2,23 @@
 {
     public class User
     {
-        private string _userName;
-        private string _hashCode;
 
-        public User(string user, string hash)
+        public string Username { get; set; }
+        public string HashCode { get; set; }
+        public string? ImagePath { get; set; }
+        public int AccessLevel { get; private set; }
+
+        public User(string username, string hash)
         {
-            _userName = user;
-            _hashCode = hash;
+            Username = username;
+            HashCode = hash;
+            AccessLevel = 0;
         }
 
+        public void SetAccess(AccessLevel level)
+        {
+            AccessLevel = (int)level;
+        }
 
     }
 }

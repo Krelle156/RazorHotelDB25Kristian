@@ -1,4 +1,5 @@
-﻿using Microsoft.Data.SqlClient;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Data.SqlClient;
 using RazorHotelDB25Kristian.Helpers;
 using RazorHotelDB25Kristian.Interfaces;
 using RazorHotelDB25Kristian.Models;
@@ -10,23 +11,29 @@ namespace RazorHotelDB25Kristian.Services
     {
         private string connectionString = ConnectionManager.Connection;
 
+        private string queryString = "Select UserName, HashPass, ImageIdString from Hotel25Users";
+
         private string insertString = "Insert INTO Hotel25Users Values(@userName, @hash)";
+        private string insertStringImage = "Insert INTO Hotel25Users Values(@userName, @hash, @image)";
 
         private string loginString = "SELECT UserName, HashPass FROM Hotel25Users Where UserName = @userName AND HashPass = @hashPass";
         private string findString = "SELECT UserName FROM Hotel25Users Where UserName = @userName";
 
-        public async Task<bool> RegisterAsync(string newUserName, string newCode)
+        public async Task<bool> RegisterAsync(string newUserName, string newCode, string? portraitPath)
         {
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 try
                 {
                     await connection.OpenAsync();
+                    SqlCommand insertCommand;
 
-                    SqlCommand insertCommand = new SqlCommand(insertString, connection);
+                    if (portraitPath!=null) insertCommand = new SqlCommand(insertStringImage, connection);
+                    else insertCommand = new SqlCommand(insertString, connection);
 
                     insertCommand.Parameters.AddWithValue("@userName", newUserName);
                     insertCommand.Parameters.AddWithValue("@hash", await SimpleHash.CreateHashStringAsync(newCode));
+                    if(portraitPath != null) insertCommand.Parameters.AddWithValue("@image", portraitPath);
 
                     int noRows = await insertCommand.ExecuteNonQueryAsync();
 
@@ -119,7 +126,41 @@ namespace RazorHotelDB25Kristian.Services
 
         public async Task<List<User>> GetAllUsers()
         {
-            throw new NotImplementedException();
+            List<User> result = new List<User>();
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                try
+                {
+                    SqlCommand command = new SqlCommand(queryString, connection);
+                    await command.Connection.OpenAsync();
+
+                    SqlDataReader reader = await command.ExecuteReaderAsync();
+                    while (await reader.ReadAsync())
+                    {
+                        string username = reader.GetString("UserName");
+                        string hashPass = reader.GetString("HashPass");
+                        string? imageIdString = reader["ImageIdString"] as string ?? null;
+                        User user = new User(username, hashPass);
+                        user.ImagePath = imageIdString;
+                        result.Add(user);
+                    }
+                    reader.Close();
+                    return result;
+                }
+                catch (SqlException sqlExp)
+                {
+                    Console.WriteLine("Database error" + sqlExp.Message);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Generel fejl: " + ex.Message);
+                }
+                finally
+                {
+
+                }
+            }
+            return null;
         }
     }
 }

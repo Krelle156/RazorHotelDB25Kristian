@@ -24,9 +24,10 @@ namespace RazorHotelDB25Kristian.Pages.Users
         public string Message { get; set; }
         public string? SessionUsername { get; private set; }
 
-        public RegisterModel(IUserService userService)
+        public RegisterModel(IUserService userService, IWebHostEnvironment webHostEnvironment)
         {
             _internalService = userService;
+            _webHostEnvironment = webHostEnvironment;
         }
 
         public void OnGet(string Username, string Password)
@@ -49,8 +50,32 @@ namespace RazorHotelDB25Kristian.Pages.Users
                 return Page();
             }
 
-            await _internalService.RegisterAsync(Username, Password);
+            string? imagePath = null;
+
+            if(Image != null)
+            {
+                imagePath = ProcessUploadedFile();
+            }
+
+            await _internalService.RegisterAsync(Username, Password, imagePath);
             return RedirectToPage("/Index");
+        }
+
+
+        private string ProcessUploadedFile()
+        {
+            string uniqueFileName = null;
+            if (Image != null)
+            {
+                string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "images/memberimages");
+                uniqueFileName = Guid.NewGuid().ToString() + "_" + Image.FileName;
+                string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    Image.CopyTo(fileStream);
+                }
+            }
+            return uniqueFileName;
         }
     }
 }

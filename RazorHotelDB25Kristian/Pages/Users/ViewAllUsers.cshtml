@@ -1,0 +1,27 @@
+﻿@page
+@using RazorHotelDB25Kristian.Models
+@model RazorHotelDB25Kristian.Pages.Users.ViewAllUsersModel
+@{
+    ViewData["Title"] = "Users in system";
+}
+
+<table class="table">
+    <thead class="lighttablehead">
+        <tr>
+            <th>Name</th>
+            <th>Image</th>
+        </tr>
+    </thead>
+    <tbody class="lighttable">
+            @foreach(User user in Model.UserList)
+            {
+        <tr>
+                <td class="col-3">@user.Username</td>
+                <td class="col-8">@user.HashCode</td>
+                <td class ="col-5">
+                    <img src="~/Images/MemberImages/@(user.ImagePath)" width="200px" height="200px">
+                </td>         
+        </tr>
+            }
+    </tbody>
+</table>
