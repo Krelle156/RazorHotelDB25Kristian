@@ -6,16 +6,23 @@
     ViewData["Title"] = "GetAllHotels";
 }
 
+@Html.AntiForgeryToken()
+@* The anti-forgery token stuff specifically is ChatGpt's doing and I must admit I only understood it partially *@
+@* But without it the search function would either not work, or I would need to force my model to ignore anti-forgery tokens, which sounds very unsafe *@
 <h5>Number of hotels is: @Model.Hotels.Count</h5>
 <h4>List of hotels</h4>
 
+<div>
+    <input id="queryField" type="text" oninput="searchFunc(queryField.value)" />
+    <h5 class="text-danger">The above is the search field using the Damerau-Levenshtein algorithm. Use with caution as it <i>will</i> break some of UI</h5>
+</div>
 
 
 <btn>
     <a asp-page="CreateHotel">Add a new hotel</a>
 </btn>
 
-<table class="table">
+<table class="table" id="resultsTable">
     <thead>
         <tr>
             <th>No</th>
@@ -41,15 +48,15 @@
                             Delete the thing!
                         </button>
                     </form> *@
-                    <form asp-page-handler="Delete" asp-route-DeleteNo="@ht.HotelNr">
-                            <input type="image" src="~/Images/trash3.svg" onclick="return confirm('Are you sure you want to delete hotel nr: @ht.HotelNr, &quot;@ht.Navn&quot;');">
+                    <form asp-page-handler="Delete" asp-route-deleteNo="@ht.HotelNr">
+                            <input type="image" src="~/Images/trash3.svg" alt="Delete" onclick="return confirm('Are you sure you want to delete hotel nr: @ht.HotelNr, &quot;@ht.Navn&quot;');">
                     </form>
 
                 </td>
 
                 <td>
                     <a class="svg-link" asp-page="CreateHotel" asp-page-handler="Update" asp-route-OldHotelNo="@ht.HotelNr">
-                            <img src="~/Images/pencil-square.svg">
+                            <img src="~/Images/pencil-square.svg" alt="Edit">
                     </a>
                 </td>
 
@@ -61,3 +68,63 @@
         }
     </tbody>
 </table>
+@section scripts
+{
+    <script>
+        //Copied from "SejlKlub razor"" project, but now with a few comments, as the result of maybe, possibly, slightly better understanding.
+            async function searchFunc(query) {
+            const response = await fetch(`?handler=Update&query=${query}`); //Apparently this is a lot of data, not just my data.
+            const valuePairs = await response.json(); //This is my data, as transferred? Returned? with return JsonResult([my list of things here])
+            updateTable(valuePairs);
+        }
+
+        function updateTable(valuePairs) {
+            const tableBody = document.getElementById('resultsTable'); //Refer to the table in the actual html
+            tableBody.innerHTML = ''; // Clear existing rows in the table
+
+            //The anti-forgery token stuff specifically is ChatGpt's doing and I must admit I only understood it partially
+            //But without it the search function would either not work, or I would need to force my model to ignore anti-forgery tokens, which sounds very unsafe
+            const tokenElement = document.querySelector('input[name="__RequestVerificationToken"]');
+            const tokenValue = tokenElement ? tokenElement.value : null;
+
+            valuePairs.forEach(item => {
+                const row = document.createElement('tr');
+                //The following generates the html
+                
+                row.innerHTML = `
+
+                    <td>${item.data.hotelNr}</td>
+                    <td>${item.data.navn}</td>
+                    <td>${item.data.adresse}</td>
+                    <td>
+                        <form method="post" action="?handler=Delete&deleteNo=${item.data.hotelNr}" onsubmit="return confirm('Are you sure you want to delete hotel nr: ${item.data.hotelNr}, &quot;${item.data.navn}&quot;?');">
+                                <input type="image" src="/Images/trash3.svg">
+                                <input name="__RequestVerificationToken" type="hidden" value="${tokenValue}" />
+                        </form>
+
+                    </td>
+
+                    <td>
+                        <a class="svg-link" href="/CreateHotel?handler=Update&OldHotelNo=${item.data.hotelNr}">
+                            <img src="/Images/pencil-square.svg" alt="Edit">
+                            <input name="__RequestVerificationToken" type="hidden" value="${tokenValue}" />
+                        </a>
+                    </td>
+
+                    <td>
+                        <a href="/Rooms/ViewAllRooms?handler=WHotel&HotelNo=${item.data.hotelNr}" class="btn btn-primary" style="border: 1px solid red;">Rooms!</a>
+                    </td>
+                </tr>
+                `; //properties MUST start with a lower case letter when sent to the javascript(?) side of things- Unless setting are changed.
+                //Additionally, my previous project did not use forms in this part I just pasted them initially.
+                //I then asked chatGpt if the code, as described in the above comment, would work. As a result I learned that asp-route, -routehandler and -page would not work in JS.
+                //The result is the following two tags in their place (for the delete action):
+                // <form method="post
+                // action="?handler=Delete&DeleteNo=${item.data.hotelNr}" --- this, as far as I can see in the contents is both asp-route and the handle in page-handler
+                //For the links it appears they need just the href containing the page, the handler (for the OnGet method) and the routed value(s)
+                tableBody.appendChild(row);
+            });
+        }
+    </script>
+
+}

@@ -25,14 +25,13 @@
                                 <a class="nav-link text-dark" asp-area="" asp-page="/Index">Home</a>
                             </li>
                             <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Users/Login">Login</a>
+                                <a class="nav-link text-dark" asp-area="" asp-page="/Users/Login">Login</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-page="/Users/Register">Register</a>
                             </li>
                         } else
                         {
-                            <p>@Context.Session.GetString("Username")</p>
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-page="/Index">Home</a>
                             </li>
@@ -44,10 +43,16 @@
                             </li> 
                         }
                         <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-page="/Users/ViewAllUsers">All Users</a>
+                            <a class="nav-link text-dark" asp-area="" asp-page="/Users/ViewAllUsers">All Users</a>
                         </li> 
                     </ul>
                 </div>
+                @if (!String.IsNullOrEmpty(Context.Session.GetString("Username")))
+                {
+                    
+                    <p>You are logged in as: @Context.Session.GetString("Username")</p>
+                }
+
             </div>
         </nav>
     </header>

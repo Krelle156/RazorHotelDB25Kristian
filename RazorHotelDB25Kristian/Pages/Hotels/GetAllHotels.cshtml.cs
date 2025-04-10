@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.IdentityModel.Tokens;
 using RazorHotelDB25Kristian.Interfaces;
 using RazorHotelDB25Kristian.Models;
+using RazorHotelDB25Kristian.Helpers;
 
 namespace RazorHotelDB25Kristian.Pages.Hotels
 {
@@ -28,9 +29,17 @@ namespace RazorHotelDB25Kristian.Pages.Hotels
             return Page();
         }
 
-        public async Task<IActionResult> OnPostDelete(int DeleteNo)
+        public async Task<IActionResult> OnGetUpdateAsync(string query)
         {
-            await _hotelService.DeleteHotelAsync(DeleteNo);
+            Hotels = await _hotelService.GetAllHotelAsync();
+            if (String.IsNullOrEmpty(query)) return new JsonResult(Hotels);
+
+            return new JsonResult(DLStringComparer<Hotel>.Matches(Hotels, x=>x.Navn, query, 1));
+        }
+
+        public async Task<IActionResult> OnPostDeleteAsync(int deleteNo)
+        {
+            await _hotelService.DeleteHotelAsync(deleteNo);
             return RedirectToPage("GetAllHotels");
         }
     }
