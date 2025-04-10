@@ -32,7 +32,7 @@ namespace RazorHotelDB25Kristian.Pages.Hotels
         public async Task<IActionResult> OnGetUpdateAsync(string query)
         {
             Hotels = await _hotelService.GetAllHotelAsync();
-            if (String.IsNullOrEmpty(query)) return new JsonResult(Hotels);
+            if (String.IsNullOrEmpty(query)) return new JsonResult(DLStringComparer<Hotel>.FalseConversion(Hotels, x => x.Navn));
 
             return new JsonResult(DLStringComparer<Hotel>.Matches(Hotels, x=>x.Navn, query, 1));
         }

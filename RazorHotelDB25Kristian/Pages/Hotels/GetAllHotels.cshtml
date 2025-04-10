@@ -14,7 +14,8 @@
 
 <div>
     <input id="queryField" type="text" oninput="searchFunc(queryField.value)" />
-    <h5 class="text-danger">The above is the search field using the Damerau-Levenshtein algorithm. Use with caution as it <i>will</i> break some of UI</h5>
+    <h5 class="text-danger">The above is the search field using the Damerau-Levenshtein algorithm. Use with caution as it <i>has</i> broken some of the UI before</h5>
+    <p>It should already be fixed in the newest version though...</p>
 </div>
 
 
@@ -22,7 +23,7 @@
     <a asp-page="CreateHotel">Add a new hotel</a>
 </btn>
 
-<table class="table" id="resultsTable">
+<table class="table">
     <thead>
         <tr>
             <th>No</th>
@@ -32,37 +33,31 @@
         </tr>
     </thead>
 
-    <tbody>
+    <tbody id="resultsTable">
         @if(Model.Hotels.Count() != 0)
         {
             foreach(Hotel ht in Model.Hotels)
             {
                 <tr>
-                <td>@ht.HotelNr</td>
-                <td>@ht.Navn</td>
-                <td>@ht.Adresse</td>
-                <td>@await SimpleHash.CreateHashStringAsync(ht.Navn)</td>
-                <td>
-                    @* <form asp-page-handler="Delete" asp-route-DeleteNo="@ht.HotelNr">
-                        <button type="submit">
-                            Delete the thing!
-                        </button>
-                    </form> *@
-                    <form asp-page-handler="Delete" asp-route-deleteNo="@ht.HotelNr">
-                            <input type="image" src="~/Images/trash3.svg" alt="Delete" onclick="return confirm('Are you sure you want to delete hotel nr: @ht.HotelNr, &quot;@ht.Navn&quot;');">
-                    </form>
+                    <td>@ht.HotelNr</td>
+                    <td>@ht.Navn</td>
+                    <td>@ht.Adresse</td>
+                    <td>
+                        <form asp-page-handler="Delete" asp-route-deleteNo="@ht.HotelNr">
+                                <input type="image" src="~/Images/trash3.svg" alt="Delete" onclick="return confirm('Are you sure you want to delete hotel nr: @ht.HotelNr, &quot;@ht.Navn&quot;');">
+                        </form>
 
-                </td>
+                    </td>
 
-                <td>
-                    <a class="svg-link" asp-page="CreateHotel" asp-page-handler="Update" asp-route-OldHotelNo="@ht.HotelNr">
-                            <img src="~/Images/pencil-square.svg" alt="Edit">
-                    </a>
-                </td>
+                    <td>
+                        <a class="svg-link" asp-page="CreateHotel" asp-page-handler="Update" asp-route-OldHotelNo="@ht.HotelNr">
+                                <img src="~/Images/pencil-square.svg" alt="Edit">
+                        </a>
+                    </td>
 
-                <td>
-                        <a asp-page="/Rooms/ViewAllRooms" asp-page-handler="WHotel" asp-route-HotelNo="@ht.HotelNr" class="btn btn-primary">Rooms!</a>
-                </td>
+                    <td>
+                            <a asp-page="/Rooms/ViewAllRooms" asp-page-handler="WHotel" asp-route-HotelNo="@ht.HotelNr" class="btn btn-primary">Rooms!</a>
+                    </td>
                 </tr>
             }
         }
@@ -112,7 +107,7 @@
                     </td>
 
                     <td>
-                        <a href="/Rooms/ViewAllRooms?handler=WHotel&HotelNo=${item.data.hotelNr}" class="btn btn-primary" style="border: 1px solid red;">Rooms!</a>
+                        <a href="/Rooms/ViewAllRooms?handler=WHotel&HotelNo=${item.data.hotelNr}" class="btn btn-primary" style="background-color : #0d6efd;">Rooms!</a>
                     </td>
                 </tr>
                 `; //properties MUST start with a lower case letter when sent to the javascript(?) side of things- Unless setting are changed.

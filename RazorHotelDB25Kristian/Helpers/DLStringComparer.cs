@@ -104,6 +104,17 @@ namespace RazorHotelDB25Kristian.Helpers
         {
             return Matches(matchables, selector, query, true, dLCost);
         }
+
+        public static List<DLStringScoreWithObject<T>> FalseConversion(List<T> objects, Func<T, string> selector)
+        {
+            List<DLStringScoreWithObject<T>> results = new List<DLStringScoreWithObject<T>>();
+            foreach (T covertee in objects)
+            {
+                string unComparedString = selector(covertee);
+                results.Add(new DLStringScoreWithObject<T>(covertee, 0, unComparedString));
+            }
+            return results;
+        }
     }
 
 
